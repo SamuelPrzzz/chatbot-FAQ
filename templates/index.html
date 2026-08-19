@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+  <html lang="es">
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Asistente FAQ</title>
+      <style>
+          body { font-family: Arial, sans-serif; background-color: #f4f4f9; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+          .chat-container { width: 400px; background: white; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: flex; flex-direction: column; overflow: hidden; }
+          .chat-header { background: #d32f2f; color: white; padding: 15px; text-align: center; font-weight: bold; }
+          .chat-box { height: 350px; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; border-bottom: 1px solid #ddd; }
+          .message { padding: 10px 14px; border-radius: 6px; max-width: 80%; font-size: 14px; line-height: 1.4; }
+          .user-message { background: #e3f2fd; align-self: flex-end; color: #0d47a1; }
+          .bot-message { background: #f1f1f1; align-self: flex-start; color: #333; }
+          .chat-input-area { display: flex; padding: 10px; background: #fff; }
+          .chat-input-area input { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 4px; outline: none; }
+          .chat-input-area button { background: #d32f2f; color: white; border: none; padding: 10px 15px; margin-left: 8px; border-radius: 4px; cursor: pointer; }
+      </style>
+  </head>
+  <body>
+
+  <div class="chat-container">
+      <div class="chat-header">Asistente FAQ </div>
+      <div class="chat-box" id="chatBox">
+          <div class="message bot-message">¡Hola! Por los momentos solo tenemos disponibles estas solicitudes, "Horario", "Ubicación" o "Menú", en qué lo podemos ayudar?</div>
+      </div>
+      <div class="chat-input-area">
+          <input type="text" id="userInput" placeholder="Escribe tu mensaje..." onkeypress="handleKeyPress(event)">
+          <button onclick="sendMessage()">Enviar</button>
+      </div>
+  </div>
+
+  <script>
+      async function sendMessage() {
+          const inputField = document.getElementById('userInput');
+          const chatBox = document.getElementById('chatBox');
+          const messageText = inputField.value.trim();
+
+          if (!messageText) return;
+
+          chatBox.innerHTML += `<div class="message user-message">${messageText}</div>`;
+          inputField.value = '';
+          chatBox.scrollTop = chatBox.scrollHeight;
+
+          try {
+              const response = await fetch('/webhook', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ message: messageText, user_id: 'web_user' })
+              });
+
+              const data = await response.json();
+
+              chatBox.innerHTML += `<div class="message bot-message">${data.reply}</div>`;
+              chatBox.scrollTop = chatBox.scrollHeight;
+          } catch (error) {
+              chatBox.innerHTML += `<div class="message bot-message">Error de conexión con el servidor.</div>`;
+          }
+      }
+
+      function handleKeyPress(event) {
+          if (event.key === 'Enter') { sendMessage(); }
+      }
+  </script>
+
+  </body>
+  </html>
