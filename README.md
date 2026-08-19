@@ -7,6 +7,7 @@
 
 - Enfoque actual: Como estudiante de Ingeniería en Informática, este proyecto me ha permitido comprender a fondo cómo interactúan los sistemas cliente-servidor, el intercambio de datos
   mediante APIs y las bases lógicas detrás de la optimización de chatbots.
+  
 
 
 ### Vista previa del programa
